@@ -1,68 +1,4 @@
-
-//      +---------------------+
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//      |                     |
-//   ^  |                     |
-//   |  |                     |
-//   Y  |                     |
-//   |  |                     |
-//   |  |                     |
-//      +---------------------+
-//       --  X (depth) --> 
-// 
-
-// the depth of the main body
-depth = 20;
-
-// the width of the enclosure for the human door side
-hd_enclosure_width = 45;
-
-// the depth of the enclosure for the human door side
-hd_enclosure_depth = 10;
-
-// the width of the indoor overhang
-overhang_indoor_width = 6;
-
-// the width of the outdoor overhang
-overhang_outdoor_width = 6;
-
-// the total height
-total_height = 30;
-
-// the width of the enclosure for the pet door side
-pd_enclosure_width = 20;
-
-// the depth of the enclosure for the pet door side
-pd_enclosure_depth = 10;
-
-seal_small_width = 20;
-seal_large_width = 30;
-seal_depth = 6.8;
-
-// the height of the track inset area
-track_height = 18;
-
-// the diameter of the track
-track_diameter = 7;
-
-// the height of the overhang
-overhang_height = total_height - track_height;
-
-// the total width
-total_width = hd_enclosure_width + overhang_indoor_width + overhang_outdoor_width;
-
-screw_body_clearance = 4.5;
-screw_head_clearance = 9;
-screw_body_depth = 10;
-screw_angle_depth = 3;
+include <dimensions.scad> 
 
 module screw_slot() {
   $fn=32;
@@ -74,7 +10,57 @@ module screw_slot() {
   }
 }
 
+// Z should be set to the surface that is being joined to
+module joiner_pins_male() {
+  translate([depth/2, (hd_enclosure_width/2) - pin_diameter, 0]) {
+    cylinder(d=pin_diameter, h=pin_length, $fn=24);
+  }
+  translate([depth/2, -((hd_enclosure_width/2) - pin_diameter), 0]) {
+    cylinder(d=pin_diameter, h=pin_length, $fn=24);
+  }
+}
+
+module cylinder_outer(height,radius,fn){
+  fudge = 1/cos(180/fn);
+  cylinder(h=height,r=radius*fudge,$fn=fn);
+}
+
+module sphere_outer(r,fn){
+  fudge = 1/cos(180/fn);
+  sphere(r=r*fudge,$fn=fn);
+}
+
+module octahedron(r=10) {
+    polyhedron(
+        points=[
+            [r,0,0], [-r,0,0], [0,r,0], [0,-r,0], // Equator
+            [0,0,r], [0,0,-r]                      // Poles
+        ],
+        faces=[
+            [0,2,4], [2,1,4], [1,3,4], [3,0,4],    // Top faces
+            [0,3,5], [3,1,5], [1,2,5], [2,0,5]     // Bottom faces
+        ]
+    );
+}
+
+module joiner_pins_female() {
+  module pin() {
+    cylinder_outer(radius=pin_diameter/2, height=pin_length, fn=24);
+    translate([0, 0, pin_length]) {
+      sphere(r=pin_diameter/2, $fn=8);
+    }
+  }
+  
+  translate([depth/2, (hd_enclosure_width/2) - pin_diameter, -pin_length]) {
+    pin();
+  }
+  translate([depth/2, -((hd_enclosure_width/2) - pin_diameter), -pin_length]) {
+    pin();
+  }
+}
+
 module main_body(ts=true, h=total_height) {
+
   difference() {
     translate([0, -hd_enclosure_width/2, 0]) {
       cube([depth,hd_enclosure_width,h]);
@@ -82,6 +68,14 @@ module main_body(ts=true, h=total_height) {
 
     translate([depth - pd_enclosure_depth, -pd_enclosure_width/2, 0]) {
       cube([pd_enclosure_depth, pd_enclosure_width, h]);
+      rotate([0, 0, 90]) {
+        translate([0.5, 0, 0]){
+          cylinder(r=0.5, h=h, $fn=20);
+        }
+        translate([pd_enclosure_width - 0.5, 0, 0]) {
+          cylinder(r=0.5, h=h, $fn=20);
+        }
+      }
     }
   }
 
@@ -150,9 +144,21 @@ module screw_slots() {
     screw_slot();
 }
 
-// ---
+// some little dots to help grip the petdoor side
+module grippies(l=total_length) {
+  for (x=[10, l-10, l/2]) {
+    translate([x, 0, 0]) {
+      translate([0, pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
+        sphere(r=0.5, $fn=8);
+      }
+      translate([0, -pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
+        sphere(r=0.5, $fn=8);
+      }
+    }
+  }
+}
 
-module bracket() {
+module bottom_bracket() {
   
   seal_overhang();
 
@@ -160,11 +166,13 @@ module bracket() {
 
   difference() {
     main_body();
-    union() {
-      screw_slots();
-      track_slot();
+    track_slot();
+
+    translate([0, 0, total_height-pin_length]) {
+      joiner_pins_male();
     }
   }
 }
 
-rotate([0, 180, 0]) translate([0, 0, -total_height]) bracket();
+// rotate([0, 180, 0])
+translate([0, 0, -total_height]) bottom_bracket();
