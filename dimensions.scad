@@ -29,7 +29,7 @@ latch_plate_depth = 3.25;
 hd_enclosure_width = 45;
 
 // the depth of the enclosure for the human door side
-hd_enclosure_depth = 10 * 2.5 + latch_plate_depth - 6;
+hd_enclosure_depth = 10 * 2.5 + latch_plate_depth - 6 + 2;
 
 // the width of the indoor overhang
 overhang_indoor_width = 6;
@@ -38,7 +38,7 @@ overhang_indoor_width = 6;
 overhang_outdoor_width = 6;
 
 // the total height
-total_height = 50; // 290
+total_height = 290;
 
 // the width of the enclosure for the pet door side
 pd_enclosure_width = 20 - 0.5;

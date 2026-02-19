@@ -7,7 +7,7 @@ mounting_screw_distance = 110;
 inner_track_width = 12.6;
 inner_track_depth = 6.5 - 0.5;
 
-hardware_allowance = 250;
+hardware_allowance = total_length;
 
 module prism(l, w, h) {
     polyhedron(// pt      0        1        2        3        4        5
@@ -84,8 +84,8 @@ module main_segment(l, ts) {
     main_body(h=l, ts=ts);
 }
 
-// edge_length = (total_length - hardware_allowance) / 2;
-edge_length = 5;
+edge_length = (total_length - hardware_allowance) / 2;
+//edge_length = 5;
 
 module center_bracket() {
   difference() {
@@ -173,10 +173,16 @@ module center_bracket_no_holes() {
   inner_track();
 
   // the x=0 end cap
+
+  /*
   main_segment(edge_length, true);
   translate([edge_length, 0, 0])
     //rotate([0, 90, 0])
     trapezoid_seal_ramp();
+
+  // the x-max end cap
+  translate([total_length - edge_length, 0, 0]) main_segment(edge_length, true);
+  */
 
   translate([-pin_length, 0, 0]) {
     rotate([0, 90, 0]) {
@@ -184,20 +190,23 @@ module center_bracket_no_holes() {
     }
   }
 
-  // the x-max end cap
-  translate([total_length - edge_length, 0, 0]) main_segment(edge_length, true);
-
   // the long body (note this part does not have the trapezoidal seal part)
-  translate([edge_length, 0, 0]) main_segment(hardware_allowance, false);
+  difference() {
+  translate([edge_length, 0, 0])
+  main_segment(hardware_allowance, false);
+    translate([total_length, 0, 0])
+      rotate([0, 90, 0])
+      #joiner_pins_female();
+      }
 
-  grippies(l=total_length);
+  //grippies(l=total_length);
 }
 
 //rotate([0, 90, 0])
 
 //grippies(l=total_length);
 
-if (false) {
+if (true) {
   center_bracket();
  } else {
   intersection() {
@@ -205,3 +214,8 @@ if (false) {
     translate([-50, -50, -50]) cube([50+80, 100, 100]);
   }
  }
+
+/*    translate([total_length - pin_length, 0, 0])
+      rotate([0, 90, 0])
+      #joiner_pins_female();
+*/

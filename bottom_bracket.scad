@@ -46,9 +46,9 @@ module octahedron(r=10) {
 module joiner_pins_female() {
   module pin() {
     cylinder_outer(radius=pin_diameter/2, height=pin_length, fn=24);
-    translate([0, 0, pin_length]) {
+    //translate([0, 0, 0/*pin_length*/]) {
       sphere(r=pin_diameter/2, $fn=8);
-    }
+      //}
   }
   
   translate([depth/2, (hd_enclosure_width/2) - pin_diameter, -pin_length]) {
