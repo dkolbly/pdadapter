@@ -66,11 +66,13 @@ module main_body(ts=true, h=total_height) {
   dfloor = (ts ? seal_floor_offset : 0);
     
   difference() {
-    
+
+    // the floor
     translate([-dfloor, -hd_enclosure_width/2, 0]) {
       cube([dfloor + depth,hd_enclosure_width, h]);
     }
 
+    // the carveout for the pet door side
     translate([depth - pd_enclosure_depth, -pd_enclosure_width/2, 0]) {
       cube([pd_enclosure_depth, pd_enclosure_width, h]);
       rotate([0, 0, 90]) {
@@ -105,31 +107,39 @@ module trapezoid_seal(h=total_height) {
 }
 
 module track_slot() {
-  translate([-seal_depth, 0, 0]) {
+  l = seal_depth + depth + seal_floor_offset;
+  
+  translate([-(seal_depth + seal_floor_offset), 0, 0]) {
     rotate(a=[0,90,0]) {
-      cylinder(h=(seal_depth+depth), d=track_diameter, $fn=32);
+      # cylinder(h=l, d=track_diameter, $fn=32);
     }
   }
 }
 
 module seal(h=overhang_height, l=hd_enclosure_depth + depth) {
+  ri = overhang_indoor_width / 2;
+  ro = overhang_outdoor_width / 2;
 
   // the indoor overhang
-  translate([0,
+  translate([ri,
              -hd_enclosure_width/2 - overhang_indoor_width,
              track_height]) {
-    cube([l,
+    cube([l-ri,
           overhang_indoor_width,
           h]);
+    translate([0, ri, overhang_height-h])
+      cylinder(r=ri, h=h, $fn=36);
   }
 
   // the outdoor overhang
-  translate([0,
+  translate([ro,
              hd_enclosure_width/2,
              track_height]) {
-    cube([l,
+    cube([l-ro,
           overhang_outdoor_width,
           h]);
+    translate([0, ro, overhang_height-h])
+      cylinder(r=ro, h=h, $fn=36);
   }
 }
 
@@ -153,15 +163,32 @@ module screw_slots() {
 // some little dots to help grip the petdoor side
 module grippies(l=total_length) {
   grippy_radius = 0.75;
+  grippy_thick = 0.3;
+  grippy_angle = 45;
   
   for (x=[10, l-10, l/2]) {
     translate([x, 0, 0]) {
+      /*
       translate([0, pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
-        sphere(r=grippy_radius, $fn=8);
+        // # sphere(r=grippy_radius, $fn=8);
+        rotate([0, 90, 0])
+        rotate([0, 0, 180-grippy_angle])
+          cube([grippy_thick, grippy_radius, 3]);
       }
       translate([0, -pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
-        sphere(r=grippy_radius, $fn=8);
+        rotate([0, 90, 0])
+        rotate([0, 0, grippy_angle])
+          cube([grippy_thick, grippy_radius, 3]);
+        // sphere(r=grippy_radius, $fn=8);
       }
+      */
+      translate([0, -pd_enclosure_width/2, pd_enclosure_depth/2 - depth])
+        rotate([grippy_angle, 0, 0])
+        cylinder(r=grippy_radius, h=grippy_thick, $fn=20);
+      translate([0, pd_enclosure_width/2, pd_enclosure_depth/2 - depth])
+        rotate([90, 0, 0])
+        rotate([grippy_angle, 0, 0])
+        cylinder(r=grippy_radius, h=grippy_thick, $fn=20);
     }
   }
 }

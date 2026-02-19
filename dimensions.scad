@@ -20,7 +20,7 @@
 // 
 
 // the depth of the main body
-depth = 11;
+depth = 12;
 
 // the depth of the latch plate
 latch_plate_depth = 3.25;

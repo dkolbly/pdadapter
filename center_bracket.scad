@@ -96,60 +96,76 @@ module center_bracket() {
 
 // this is the ramp from the base layer (z=0) to the trap seal.
 // coordinate system ...
-module trapezoid_seal_ramp() {
+module trapezoid_seal_ramp(l=seal_depth+seal_floor_offset) {
   x0 = 0;
-  x1 = seal_floor_offset + seal_depth; // create a 45 degree angle
-
-  z0 = 0;
-  z1 = seal_floor_offset + seal_depth;
-  z2 = seal_floor_offset;
+  x1 = seal_floor_offset;
+  x2 = (seal_depth + seal_floor_offset);
 
   y0 = -seal_small_width / 2;
-  y1 = -y0;
+  y1 = seal_small_width / 2;
   y2 = -seal_large_width / 2;
-  y3 = -y2;
+  y3 = seal_large_width / 2;
   y4 = -hd_enclosure_width / 2;
-  y5 = -y4;
+  y5 = hd_enclosure_width / 2;
 
-  #
-  polyhedron(points=[[x0, y0, z1],
-                     [x0, y1, z1],
-                     [x0, y2, z2],
-                     [x0, y3, z2],
-                     [x0, y2, z2],
-                     [x0, y3, z2],
-                     [x0, y4, z0],
+  z0 = 0;
+  z1 = (l - seal_depth);
+  z2 = l;
+
+  polyhedron(points=[[x0, y4, z0],
                      [x0, y5, z0],
-                     [x1, y0, z1],
-                     [x1, y1, z1],
-                     [x1, y2, z2],
-                     [x1, y3, z2],
+                     [x1, y5, z0],
+                     [x1, y3, z0],
+                     [x2, y1, z0],
+                     [x2, y0, z0],
+                     [x1, y2, z0],
                      [x1, y4, z0],
-                     [x1, y5, z0]],
-             faces=[[0, 1, 5, 4],
-                    [5, 1, 3],
-                    [4, 2, 0],
-                    [1, 0, 2, 3],
-                    [2, 4, 5, 3]]);
-}
+                     [x0, y4, z1],
+                     [x0, y2, z1],
+                     [x0, y0, z2],
+                     [x0, y1, z2],
+                     [x0, y3, z1],
+                     [x0, y5, z1]],
+             faces=[
+                    [0, 7, 8], // left side
+                    [8, 7, 6, 9], // top (left)
+                    [9, 6, 5, 10],
+                    [10, 5, 4, 11],
+                    [11, 4, 3, 12],
+                    [12, 3, 2, 13], // top (right)
+                    [13, 2, 1], // right side,
+                    [0, 1, 2, 3, 4, 5, 6, 7], // back
+                    [0, 8, 9, 10, 11, 12, 13, 1] // bottom
+                    ]);
+}  
 
 module center_bracket_no_holes() {
   // indoor HD seal
+  ri = overhang_indoor_width / 2;
+  
   translate([0,
              -(hd_enclosure_width/2 + overhang_indoor_width),
              -depth]) {
     cube([total_length,
           overhang_indoor_width,
-          depth + hd_enclosure_depth]);
+          depth + hd_enclosure_depth - ri]);
+    translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ri])
+      rotate([0, 90, 0])
+      cylinder(r=ri, h=total_length, $fn=36);
   }
 
   // outdoor HD seal
+  ro = overhang_outdoor_width / 2;
+  
   translate([0,
              hd_enclosure_width/2,
              -depth]) {
     cube([total_length,
           overhang_outdoor_width,
-          depth + hd_enclosure_depth]);
+          depth + hd_enclosure_depth - ro]);
+    translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ro])
+      rotate([0, 90, 0])
+      cylinder(r=ro, h=total_length, $fn=36);
   }
 
   //seal(l=total_length, h=hd_enclosure_depth + depth); // the 10 is the overhang
@@ -158,7 +174,9 @@ module center_bracket_no_holes() {
 
   // the x=0 end cap
   main_segment(edge_length, true);
-  translate([edge_length, 0, 0]) trapezoid_seal_ramp();
+  translate([edge_length, 0, 0])
+    //rotate([0, 90, 0])
+    trapezoid_seal_ramp();
 
   translate([-pin_length, 0, 0]) {
     rotate([0, 90, 0]) {
@@ -176,6 +194,8 @@ module center_bracket_no_holes() {
 }
 
 //rotate([0, 90, 0])
+
+//grippies(l=total_length);
 
 if (false) {
   center_bracket();
