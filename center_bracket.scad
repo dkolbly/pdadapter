@@ -5,7 +5,7 @@ total_length = 290; // requires build volume 300
 mounting_screw_distance = 110;
 
 inner_track_width = 12.6;
-inner_track_depth = 6.5 - 0.5; 
+inner_track_depth = 6.5 - 0.5;
 
 hardware_allowance = 250;
 
@@ -84,8 +84,8 @@ module main_segment(l, ts) {
     main_body(h=l, ts=ts);
 }
 
-edge_length = (total_length - hardware_allowance) / 2;
-
+// edge_length = (total_length - hardware_allowance) / 2;
+edge_length = 5;
 
 module center_bracket() {
   difference() {
@@ -98,27 +98,39 @@ module center_bracket() {
 // coordinate system ...
 module trapezoid_seal_ramp() {
   x0 = 0;
-  x1 = seal_depth; // create a 45 degree angle
+  x1 = seal_floor_offset + seal_depth; // create a 45 degree angle
 
   z0 = 0;
-  z1 = seal_depth;
+  z1 = seal_floor_offset + seal_depth;
+  z2 = seal_floor_offset;
 
   y0 = -seal_small_width / 2;
   y1 = -y0;
   y2 = -seal_large_width / 2;
   y3 = -y2;
-         
+  y4 = -hd_enclosure_width / 2;
+  y5 = -y4;
+
+  #
   polyhedron(points=[[x0, y0, z1],
                      [x0, y1, z1],
-                     [x0, y2, z0],
-                     [x0, y3, z0],
-                     [x1, y0, z0],
-                     [x1, y1, z0]],
-             faces=[[0, 1, 5, 4], // the top face
-                    [5, 1, 3], // the right side face
-                    [4, 2, 0], // the left side face
-                    [1, 0, 2, 3], // the rear face
-                    [2, 4, 5, 3]]); // the bottom face
+                     [x0, y2, z2],
+                     [x0, y3, z2],
+                     [x0, y2, z2],
+                     [x0, y3, z2],
+                     [x0, y4, z0],
+                     [x0, y5, z0],
+                     [x1, y0, z1],
+                     [x1, y1, z1],
+                     [x1, y2, z2],
+                     [x1, y3, z2],
+                     [x1, y4, z0],
+                     [x1, y5, z0]],
+             faces=[[0, 1, 5, 4],
+                    [5, 1, 3],
+                    [4, 2, 0],
+                    [1, 0, 2, 3],
+                    [2, 4, 5, 3]]);
 }
 
 module center_bracket_no_holes() {
@@ -147,7 +159,7 @@ module center_bracket_no_holes() {
   // the x=0 end cap
   main_segment(edge_length, true);
   translate([edge_length, 0, 0]) trapezoid_seal_ramp();
-  
+
   translate([-pin_length, 0, 0]) {
     rotate([0, 90, 0]) {
       joiner_pins_male();
@@ -164,9 +176,12 @@ module center_bracket_no_holes() {
 }
 
 //rotate([0, 90, 0])
-//center_bracket();
 
-intersection() {
+if (false) {
   center_bracket();
-  translate([-50, -50, -50]) cube([50+80, 100, 100]);
-}
+ } else {
+  intersection() {
+    center_bracket();
+    translate([-50, -50, -50]) cube([50+80, 100, 100]);
+  }
+ }

@@ -61,25 +61,31 @@ module joiner_pins_female() {
 
 module main_body(ts=true, h=total_height) {
 
+  // the radius of the little fold in the PD side
+  pd_enclosure_mini_radius = 0.8;
+  dfloor = (ts ? seal_floor_offset : 0);
+    
   difference() {
-    translate([0, -hd_enclosure_width/2, 0]) {
-      cube([depth,hd_enclosure_width,h]);
+    
+    translate([-dfloor, -hd_enclosure_width/2, 0]) {
+      cube([dfloor + depth,hd_enclosure_width, h]);
     }
 
     translate([depth - pd_enclosure_depth, -pd_enclosure_width/2, 0]) {
       cube([pd_enclosure_depth, pd_enclosure_width, h]);
       rotate([0, 0, 90]) {
-        translate([0.5, 0, 0]){
-          cylinder(r=0.5, h=h, $fn=20);
+        translate([pd_enclosure_mini_radius, 0, 0]){
+          cylinder(r=pd_enclosure_mini_radius, h=h, $fn=20);
         }
-        translate([pd_enclosure_width - 0.5, 0, 0]) {
-          cylinder(r=0.5, h=h, $fn=20);
+        translate([pd_enclosure_width - pd_enclosure_mini_radius, 0, 0]) {
+          cylinder(r=pd_enclosure_mini_radius, h=h, $fn=20);
         }
       }
     }
   }
 
   if (ts) {
+    translate([-dfloor, 0, 0])
     trapezoid_seal(h=h);
   }
 }
@@ -146,13 +152,15 @@ module screw_slots() {
 
 // some little dots to help grip the petdoor side
 module grippies(l=total_length) {
+  grippy_radius = 0.75;
+  
   for (x=[10, l-10, l/2]) {
     translate([x, 0, 0]) {
       translate([0, pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
-        sphere(r=0.5, $fn=8);
+        sphere(r=grippy_radius, $fn=8);
       }
       translate([0, -pd_enclosure_width/2, pd_enclosure_depth/2 - depth]) {
-        sphere(r=0.5, $fn=8);
+        sphere(r=grippy_radius, $fn=8);
       }
     }
   }
