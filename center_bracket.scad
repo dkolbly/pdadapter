@@ -140,49 +140,11 @@ module trapezoid_seal_ramp(l=seal_depth+seal_floor_offset) {
 }  
 
 module center_bracket_no_holes() {
-  // indoor HD seal
-  ri = overhang_indoor_width / 2;
-  
-  translate([0,
-             -(hd_enclosure_width/2 + overhang_indoor_width),
-             -depth]) {
-    cube([total_length,
-          overhang_indoor_width,
-          depth + hd_enclosure_depth - ri]);
-    translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ri])
-      rotate([0, 90, 0])
-      cylinder(r=ri, h=total_length, $fn=36);
-  }
-
-  // outdoor HD seal
-  ro = overhang_outdoor_width / 2;
-  
-  translate([0,
-             hd_enclosure_width/2,
-             -depth]) {
-    cube([total_length,
-          overhang_outdoor_width,
-          depth + hd_enclosure_depth - ro]);
-    translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ro])
-      rotate([0, 90, 0])
-      cylinder(r=ro, h=total_length, $fn=36);
-  }
-
-  //seal(l=total_length, h=hd_enclosure_depth + depth); // the 10 is the overhang
+  simple_hd_seal();
 
   inner_track();
 
   // the x=0 end cap
-
-  /*
-  main_segment(edge_length, true);
-  translate([edge_length, 0, 0])
-    //rotate([0, 90, 0])
-    trapezoid_seal_ramp();
-
-  // the x-max end cap
-  translate([total_length - edge_length, 0, 0]) main_segment(edge_length, true);
-  */
 
   translate([-pin_length, 0, 0]) {
     rotate([0, 90, 0]) {

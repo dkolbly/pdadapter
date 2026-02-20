@@ -1,7 +1,7 @@
 include <dimensions.scad>;
 use <bottom_bracket.scad>;
 
-total_length = 290; // requires build volume 300
+total_length = 280; // requires build volume 300
 
 difference() {
   rotate([0, 90, 0])
@@ -18,3 +18,9 @@ translate([-pin_length, 0, 0]) {
   }
 }
 
+simple_hd_seal();
+/*rotate([0, 90, 0])
+translate([-hd_enclosure_depth, 0, 0])
+translate([0, 0, -track_height])
+seal();
+*/
