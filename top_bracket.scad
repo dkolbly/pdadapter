@@ -59,8 +59,8 @@ if (true) {
   carveouts();
  }
 
-//translate([top_bracket_frame_depth, 0, 0])
-//simple_hd_seal(l=total_length - top_bracket_frame_depth);
+translate([top_bracket_frame_depth, 0, 0])
+simple_hd_seal(l=total_length - top_bracket_frame_depth);
 
 screw_carveout_depth = 3;
 screw_carveout_inset_offset = 7;
