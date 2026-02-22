@@ -72,19 +72,19 @@ screw_angle_depth = 3;
 pin_diameter = 5;
 pin_length = 5;
 
-module simple_hd_seal() {
+module simple_hd_seal(l=total_length) {
   // indoor HD seal
   ri = overhang_indoor_width / 2;
   
   translate([0,
              -(hd_enclosure_width/2 + overhang_indoor_width),
              -depth]) {
-    cube([total_length,
+    cube([l,
           overhang_indoor_width,
           depth + hd_enclosure_depth - ri]);
     translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ri])
       rotate([0, 90, 0])
-      cylinder(r=ri, h=total_length, $fn=36);
+      cylinder(r=ri, h=l, $fn=36);
   }
 
   // outdoor HD seal
@@ -93,11 +93,15 @@ module simple_hd_seal() {
   translate([0,
              hd_enclosure_width/2,
              -depth]) {
-    cube([total_length,
+    cube([l,
           overhang_outdoor_width,
           depth + hd_enclosure_depth - ro]);
     translate([0, overhang_indoor_width/2, hd_enclosure_depth + depth - ro])
       rotate([0, 90, 0])
-      cylinder(r=ro, h=total_length, $fn=36);
+      cylinder(r=ro, h=l, $fn=36);
   }
 }
+
+top_bracket_pd_expansion_length = 166;
+top_bracket_pd_expansion_width = 24;
+top_bracket_frame_depth = 26;

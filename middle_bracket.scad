@@ -1,6 +1,8 @@
 include <dimensions.scad>;
 use <bottom_bracket.scad>;
 
+// the Creality Max prints about 0.3% smaller, so if the model is
+// 280mm long, it comes out to about 279mm actual
 total_length = 280; // requires build volume 300
 
 difference() {
@@ -19,8 +21,3 @@ translate([-pin_length, 0, 0]) {
 }
 
 simple_hd_seal();
-/*rotate([0, 90, 0])
-translate([-hd_enclosure_depth, 0, 0])
-translate([0, 0, -track_height])
-seal();
-*/
