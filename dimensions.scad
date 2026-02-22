@@ -105,3 +105,15 @@ module simple_hd_seal(l=total_length) {
 top_bracket_pd_expansion_length = 166;
 top_bracket_pd_expansion_width = 24;
 top_bracket_frame_depth = 26;
+
+// how far the latch plate extends beyond the middle bracket
+latch_plate_over_extension = 8;
+
+// how far to penetrate the gap for the latch plate into the
+// main seal floor (i.e., how deep the latch plate is relative
+// to the HD surface it's attached to)
+latch_plate_over_depth = 4;
+
+// the Creality Max prints about 0.3% smaller, so if the model is
+// 280mm long, it comes out to about 279mm actual
+function adjust_length_error(l) = l / (1-0.0035);

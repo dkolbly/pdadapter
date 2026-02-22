@@ -1,9 +1,7 @@
 include <dimensions.scad>;
 use <bottom_bracket.scad>;
 
-// the Creality Max prints about 0.3% smaller, so if the model is
-// 280mm long, it comes out to about 279mm actual
-total_length = 176 / (1-0.0035); // requires build volume 300
+total_length = adjust_length_error(176); // requires build volume 300
 
 
 module expansion_carveout() {
