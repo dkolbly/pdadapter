@@ -3,6 +3,10 @@ use <bottom_bracket.scad>;
 
 total_length = adjust_length_error(176); // requires build volume 300
 
+screw_carveout_depth = 4;
+screw_carveout_inset_offset = 7;
+screw_carveout_length_offset = 9;
+screw_carveout_diameter = 8;
 
 module expansion_carveout() {
   w = (top_bracket_pd_expansion_width - pd_enclosure_width)/2;
@@ -33,9 +37,10 @@ module carveouts() {
       joiner_pins_female();
 
     w = (top_bracket_pd_expansion_width - pd_enclosure_width)/2;
-    
+
+    // right side
     translate([top_bracket_pd_expansion_length - screw_carveout_length_offset,
-               -top_bracket_pd_expansion_width/2,
+               top_bracket_pd_expansion_width/2 + screw_carveout_depth,
                -screw_carveout_inset_offset]) {
       rotate([90, 0, 0])
         # cylinder(r=screw_carveout_diameter/2, h=screw_carveout_depth, $fn=36);
@@ -60,7 +65,3 @@ if (true) {
 translate([top_bracket_frame_depth, 0, 0])
 simple_hd_seal(l=total_length - top_bracket_frame_depth);
 
-screw_carveout_depth = 3;
-screw_carveout_inset_offset = 7;
-screw_carveout_length_offset = 9;
-screw_carveout_diameter = 8;

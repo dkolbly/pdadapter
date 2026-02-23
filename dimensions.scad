@@ -103,7 +103,7 @@ module simple_hd_seal(l=total_length) {
 }
 
 top_bracket_pd_expansion_length = 166;
-top_bracket_pd_expansion_width = 24;
+top_bracket_pd_expansion_width = 25.5;
 top_bracket_frame_depth = 26;
 
 // how far the latch plate extends beyond the middle bracket
