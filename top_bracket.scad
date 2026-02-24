@@ -1,7 +1,7 @@
 include <dimensions.scad>;
 use <bottom_bracket.scad>;
 
-total_length = adjust_length_error(176); // requires build volume 300
+total_length = adjust_length_error(290); // requires build volume 300
 
 screw_carveout_depth = 4;
 screw_carveout_inset_offset = 7;
